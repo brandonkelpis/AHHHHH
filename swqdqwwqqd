@@ -1,0 +1,113 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import scienceplots
+from scipy.integrate import tplquad
+plt.style.use (['science', 'notebook', 'grid'])
+from numba import njit 
+
+G = 6.6743 * (10**-11)
+distance = 0
+
+
+@njit
+def bulge1(r,phi,theta):
+  pc = 920100000
+  dn = 7.769
+  ac = 1.155
+  q = .72
+  N = 2.7
+  a = r*np.sqrt((np.sin(phi))**2 + (((np.cos(phi))**2) / (q**2)))
+  b = (1/N)
+  c = (a/ac)**b -1
+  numer = r*np.sin(phi)*np.cos(theta)
+  sinexphi = (np.sin(phi))**2
+  cosextheta = (np.cos(theta))**2
+  cosexphi = (np.cos(phi))**2
+  rsqare = r**2
+  middle_exp = r*np.sin(phi)*np.sin(theta) - distance
+  denom = (np.sqrt(rsqare*sinexphi*cosextheta + (middle_exp)**2 + rsqare*cosexphi))**3
+
+  return (numer/denom)*(G*np.sin(phi)*(r**2)*pc*np.exp(-dn*(c)))
+
+inner_lower_limit = 0
+inner_upper_limit = 10**3
+
+middle_lower_limit = 0
+middle_upper_limit = np.pi
+
+outer_lower_limit = 0
+outer_upper_limit = 2*np.pi
+
+result_bulge1, error_bulge1 = tplquad(bulge1, inner_lower_limit, inner_upper_limit, lambda x: middle_lower_limit, lambda x: middle_upper_limit, lambda x, y: outer_lower_limit, lambda x, y: outer_upper_limit)
+
+
+@njit
+def bulge2(r,phi,theta):
+  pc = 920100000
+  dn = 7.769
+  ac = 1.155
+  q = .72
+  N = 2.7
+  a = r*np.sqrt((np.sin(phi))**2 + (((np.cos(phi))**2) / (q**2)))
+  b = (1/N)
+  c = (a/ac)**b -1
+  numer = r*np.sin(phi)*np.sin(theta) - distance
+  sinexphi = (np.sin(phi))**2
+  cosextheta = (np.cos(theta))**2
+  cosexphi = (np.cos(phi))**2
+  rsqare = r**2
+  middle_exp = r*np.sin(phi)*np.sin(theta) - distance
+  denom = (np.sqrt(rsqare*sinexphi*cosextheta + (middle_exp)**2 + rsqare*cosexphi))**3
+
+  return (numer/denom)*(G*np.sin(phi)*(r**2)*pc*np.exp(-dn*(c)))
+
+iinner_lower_limit = 0
+iinner_upper_limit = 10**3
+
+mmiddle_lower_limit = 0
+mmiddle_upper_limit = np.pi
+
+oouter_lower_limit = 0
+oouter_upper_limit = 2*np.pi
+
+result_bulge2, error_bulge2 = tplquad(bulge2, inner_lower_limit, inner_upper_limit, lambda x: middle_lower_limit, lambda x: middle_upper_limit, lambda x, y: outer_lower_limit, lambda x, y: outer_upper_limit)
+
+
+@njit
+def bulge3(r,phi,theta):
+  pc = 920100000
+  dn = 7.769
+  ac = 1.155
+  q = .72
+  N = 2.7
+  a = r*np.sqrt((np.sin(phi))**2 + (((np.cos(phi))**2) / (q**2)))
+  b = (1/N)
+  c = (a/ac)**b -1
+  numer = r*np.cos(phi)
+  sinexphi = (np.sin(phi))**2
+  cosextheta = (np.cos(theta))**2
+  cosexphi = (np.cos(phi))**2
+  rsqare = r**2
+  middle_exp = r*np.sin(phi)*np.sin(theta) - distance
+  denom = (np.sqrt(rsqare*sinexphi*cosextheta + (middle_exp)**2 + rsqare*cosexphi))**3
+
+  return (numer/denom)*(G*np.sin(phi)*(r**2)*pc*np.exp(-dn*(c)))
+
+iiinner_lower_limit = 0
+iiinner_upper_limit = 10**3
+
+mmmiddle_lower_limit = 0
+mmmiddle_upper_limit = np.pi
+
+ooouter_lower_limit = 0
+ooouter_upper_limit = 2*np.pi
+
+result_bulge3, error_bulge3 = tplquad(bulge3, inner_lower_limit, inner_upper_limit, lambda x: middle_lower_limit, lambda x: middle_upper_limit, lambda x, y: outer_lower_limit, lambda x, y: outer_upper_limit)
+
+
+
+resultt = np.array([result_bulge1, result_bulge2, result_bulge3])
+
+print (resultt)
+
+#Cannot intgerate with Distance being an array, so i would need to somehow add the distance outside the integration which does not seem possible.
